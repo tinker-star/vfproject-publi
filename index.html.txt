@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>V & F Project Selling</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:radial-gradient(circle at top,#0f2027,#000);color:#fff;overflow-x:hidden;}
+header{padding:50px 20px;text-align:center;}
+header h1{font-size:3rem;color:#00ffe1;text-shadow:0 0 20px #00ffe1;}
+header p{margin-top:20px;max-width:900px;margin:auto;color:#cfd8dc;font-size:1.1rem;line-height:1.8;}
+section{padding:70px 20px;max-width:1100px;margin:auto;}
+.card{background:rgba(255,255,255,0.05);border-radius:20px;padding:40px;box-shadow:0 0 40px rgba(0,255,225,0.25);backdrop-filter:blur(10px);}
+.card h2{color:#00ffe1;margin-bottom:20px;font-size:2rem;}
+.card p{color:#d0d0d0;line-height:1.8;margin-bottom:25px;}
+label{display:block;margin-bottom:10px;font-weight:500;}
+input[type="text"], input[type="file"]{width:100%;padding:12px;background:#000;color:#00ffe1;border:1px solid #00ffe1;border-radius:10px;margin-bottom:20px;}
+.checkbox-group{display:flex;gap:25px;margin-bottom:30px;}
+.checkbox-group label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+button{padding:14px 32px;border:none;border-radius:30px;font-size:1rem;font-weight:600;cursor:pointer;transition:0.3s;margin-right:12px;}
+.btn-estimate{background:linear-gradient(90deg,#00ffe1,#00bcd4);color:#000;box-shadow:0 0 20px #00ffe1;}
+.btn-buy{background:linear-gradient(90deg,#ff00cc,#ff4ecd);color:#000;box-shadow:0 0 20px #ff00cc;}
+button:hover{transform:scale(1.05);}
+.note{margin-top:25px;font-size:0.9rem;color:#9aa7ad;}
+footer{text-align:center;padding:30px;color:#777;font-size:0.9rem;}
+#chatButton{position:fixed;bottom:25px;right:25px;background:linear-gradient(90deg,#00ffe1,#00bcd4);color:#000;padding:15px 22px;border-radius:30px;font-weight:600;cursor:pointer;box-shadow:0 0 20px #00ffe1;z-index:1000;}
+#chatBox{position:fixed;bottom:90px;right:25px;width:320px;background:#0b1c22;border-radius:15px;box-shadow:0 0 30px rgba(0,255,225,0.4);display:none;flex-direction:column;overflow:hidden;z-index:1000;}
+.chat-header{background:#00ffe1;color:#000;padding:12px;display:flex;justify-content:space-between;font-weight:600;}
+.chat-body{padding:12px;height:220px;overflow-y:auto;font-size:0.9rem;}
+.bot-msg{background:rgba(255,255,255,0.1);padding:8px;border-radius:10px;margin-bottom:10px;}
+.user-msg{background:#00ffe1;color:#000;padding:8px;border-radius:10px;margin-bottom:10px;text-align:right;}
+.chat-input{display:flex;border-top:1px solid #00ffe1;}
+.chat-input input{flex:1;padding:10px;border:none;outline:none;}
+.chat-input button{background:#00ffe1;border:none;padding:10px 15px;font-weight:600;cursor:pointer;}
+@media (max-width:600px){header h1{font-size:2.2rem;}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>V & F Project Selling</h1>
+<p>Students in schools and colleges often have excellent ideas for robotics and electronics exhibitions, but lack time, components, or making skills. <br><br>
+<strong>V & F Project Selling</strong> is built for those students. You bring the idea — we professionally design, build, and deliver your project faster and neatly at a reasonable cost.</p>
+</header>
+
+<section>
+<div class="card">
+<h2>Submit Your Project Idea</h2>
+<p>Upload your project idea or exhibition brief. Our staff will analyze it and provide an estimate for components and working charges.</p>
+
+<label>Your Name</label>
+<input type="text" id="userName" placeholder="Enter your name">
+
+<label>Roll Number</label>
+<input type="text" id="rollNumber" placeholder="Enter your Roll Number">
+
+<label>Upload Project File</label>
+<input type="file" id="projectFile">
+
+<div class="checkbox-group">
+<label><input type="radio" name="userType" value="School Student"> School Student</label>
+<label><input type="radio" name="userType" value="College Student"> College Student</label>
+</div>
+
+<button class="btn-estimate" onclick="submitProject()">Submit Project</button>
+
+<div class="note">
+* Roll Number is mandatory.<br>
+* Our staff will contact you after review.
+</div>
+</div>
+</section>
+
+<footer>
+© 2025 V & F Project Selling | Robotics & Electronics Project Solutions
+</footer>
+
+<!-- Chat -->
+<div id="chatButton" onclick="openChat()">💬 Chat</div>
+<div id="chatBox">
+<div class="chat-header"><span>Chat with V & F Staff</span><button onclick="closeChat()">✖</button></div>
+<div class="chat-body" id="chatBody"><div class="bot-msg">👋 Hi! Ask your doubts here. Our staff will reply soon.</div></div>
+<div class="chat-input">
+<input type="text" id="chatInput" placeholder="Type your message..." />
+<button onclick="sendMessage()">Send</button>
+</div>
+</div>
+
+<script>
+function submitProject(){
+  const name=document.getElementById("userName").value.trim();
+  const roll=document.getElementById("rollNumber").value.trim();
+  const type=document.querySelector('input[name="userType"]:checked')?.value;
+  const file=document.getElementById("projectFile").files[0]?.name || "No file";
+
+  if(!name || !roll || !type){ alert("Please fill all fields!"); return; }
+
+  let projects=JSON.parse(localStorage.getItem("projects"))||[];
+  projects.push({name:name, rollNumber:roll, type:type, fileName:file, status:"Pending", estimate:"Pending"});
+  localStorage.setItem("projects",JSON.stringify(projects));
+  alert("Project submitted successfully!");
+}
+
+function openChat(){document.getElementById("chatBox").style.display="flex";}
+function closeChat(){document.getElementById("chatBox").style.display="none";}
+function sendMessage(){
+  const input=document.getElementById("chatInput"); const msg=input.value.trim(); if(msg==="") return;
+  const chatBody=document.getElementById("chatBody");
+  const userDiv=document.createElement("div"); userDiv.className="user-msg"; userDiv.innerText=msg;
+  chatBody.appendChild(userDiv); input.value=""; chatBody.scrollTop=chatBody.scrollHeight;
+  setTimeout(()=>{const botDiv=document.createElement("div"); botDiv.className="bot-msg"; botDiv.innerText="✅ Message received. Our staff will reply soon."; chatBody.appendChild(botDiv); chatBody.scrollTop=chatBody.scrollHeight;},1000);
+}
+</script>
+</body>
+</html>
